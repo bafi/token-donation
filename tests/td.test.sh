@@ -45,6 +45,14 @@ check test_LIFE_11_invalid_release_ignored   '[ "$(winner "claim a\nrelease x\nc
 check test_LIFE_11_reap_counts_as_release    '[ "$(winner "claim a\nreap a\nclaim b\n")" = b ]'
 check test_LIFE_11_old_claim_before_release  '[ "$(winner "claim a\nrelease a\n")" = "" ]'
 
+# --- SEC-05: forged markers from outsiders are ignored (real jq over a gh-shaped payload)
+payload='{"comments":[
+ {"authorAssociation":"NONE","body":"<!-- td:claim id=evil login=@x -->"},
+ {"authorAssociation":"COLLABORATOR","body":"<!-- td:claim id=good login=@bob -->"},
+ {"authorAssociation":"NONE","body":"<!-- td:release id=good login=@x -->"},
+ {"authorAssociation":"NONE","body":"<!-- td:reap id=good login=@x -->"}]}'
+check test_SEC_05_forged_markers_ignored    '[ "$(printf "%s" "$payload" | jq -r "$TD_MARKER_JQ" | td_fold)" = good ]'
+
 # --- CLI basics
 check test_td_help_runs                      'sh "$HERE/.td/bin/td" help | grep -q "pick \[N\]"'
 check test_td_syntax_ok                      'sh -n "$HERE/.td/bin/td"'

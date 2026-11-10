@@ -110,11 +110,19 @@ Task created by @$LOGIN ($state)." >/dev/null 2>&1
 }
 
 # --- list --------------------------------------------------------------------
-reap_stale() { # LIFE-12: release claims with no activity for STALE_MIN minutes
+reap_stale() { # LIFE-12: release claims with no activity for STALE_MIN minutes.
+  # Activity = the later of the issue's last update and the last push to its task
+  # branch (pushes don't bump the issue's updatedAt).
+  git fetch -q origin 2>/dev/null
+  now=$(date +%s)
   gh issue list --label td:claimed --state open --json number,updatedAt \
-    --jq ".[] | select((now - (.updatedAt|fromdateiso8601)) > ($STALE_MIN*60)) | .number" 2>/dev/null |
-  while read -r n; do
+    --jq '.[] | "\(.number) \(.updatedAt|fromdateiso8601)"' 2>/dev/null |
+  while read -r n upd; do
     [ -n "$n" ] || continue
+    b=$(git for-each-ref --format='%(refname)' "refs/remotes/origin/td/$n-*" | grep -v -- '--orphan-' | head -1)
+    last=$upd
+    if [ -n "$b" ]; then ct=$(git log -1 --format=%ct "$b" 2>/dev/null); [ "${ct:-0}" -gt "$last" ] && last=$ct; fi
+    [ $(( now - last )) -gt $(( STALE_MIN * 60 )) ] || continue
     w=$(td_winner "$n")
     who=$(gh issue view "$n" --json assignees --jq '.assignees[0].login // empty')
     gh issue comment "$n" --body "<!-- td:reap id=${w:-none} login=@$LOGIN at=$(date -u +%Y-%m-%dT%H:%M:%SZ) -->

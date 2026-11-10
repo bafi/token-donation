@@ -421,7 +421,7 @@ These rules are injected into every helper's Claude session through `CLAUDE.md` 
    - `td:draft`, `td:available`, `td:claimed`, `td:awaiting-review`, `td:needs-owner`, `td:cancelled`
    - `td:changes-requested`, `td:ended-unexpectedly`
    - `td:size:S`, `td:size:M`, `td:size:L`
-   - `td-paused`
+   - **not** `td-paused`: creating that label is the kill switch and pauses everything (SEC-14)
 
 **Rulesets**
 

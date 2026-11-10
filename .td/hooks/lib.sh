@@ -75,11 +75,11 @@ td_usage_low() { # 0 only if a FRESH cache (<10 min) shows both windows below 90
 
 # --- GitHub state -----------------------------------------------------------
 # Winning claim id (LIFE-11): the earliest claim after the last valid release.
-td_winner() {
-  gh issue view "$1" --json comments \
-    --jq '.comments[].body | capture("<!-- td:(?<t>claim|release|reap) id=(?<id>[^ ]+)") | "\(.t) \(.id)"' \
-  | awk '$1=="claim" && w=="" {w=$2} ($1=="release"||$1=="reap") && $2==w {w=""} END {print w}'
-}
+# Only markers from collaborators count (SEC-05): on a public repo anyone can
+# comment, and a forged td:claim/release/reap must not move a claim.
+TD_MARKER_JQ='.comments[] | select(.authorAssociation=="OWNER" or .authorAssociation=="MEMBER" or .authorAssociation=="COLLABORATOR") | .body | capture("<!-- td:(?<t>claim|release|reap) id=(?<id>[^ ]+)") | "\(.t) \(.id)"'
+td_fold() { awk '$1=="claim" && w=="" {w=$2} ($1=="release"||$1=="reap") && $2==w {w=""} END {print w}'; }
+td_winner() { gh issue view "$1" --json comments --jq "$TD_MARKER_JQ" | td_fold; }
 
 # Definition of Ready (LIFE-06) on an issue body read from stdin.
 # Prints what is missing, one item per line. Exit 0 = ready.
