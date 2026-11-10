@@ -76,11 +76,13 @@ case "$tool" in
 
     # SEC-08: catch obvious shell writes to protected paths. The Edit/Write checks
     # below are the main guard; CI backs both up on the server.
-    case "$c" in
-      *">"*".github/"*|*">"*".claude/"*|*">"*"CLAUDE.md"*|*">"*".td/hooks/"*|*">"*".td/bin/"*|*">"*".gitignore"*|\
-      *"rm "*".github"*|*"rm "*".claude"*|*"rm "*".td/hooks"*|*"rm "*".td/bin"*|*"rm "*"CLAUDE.md"*)
-        block SEC-08 "That command writes to a protected path." ;;
-    esac
+    # Only the TARGET of a write counts: a redirect (> or >>) or tee pointing at a
+    # protected path, or rm/mv/sed -i on one within the same command segment.
+    # Merely running a hook script (sh .td/hooks/x.sh) is not a write.
+    prot='(\./)?(\.github(/|[[:space:]]|$)|\.claude(/|[[:space:]]|$)|CLAUDE\.md|\.td/hooks(/|[[:space:]]|$)|\.td/bin(/|[[:space:]]|$)|\.gitignore)'
+    if printf '%s' "$c" | grep -Eq ">>?[[:space:]]*[\"']?$prot|tee([[:space:]]+-a)?[[:space:]]+[\"']?$prot|(^|[;&|[:space:]])(rm|mv|sed[[:space:]]+-i[^;&|]*)[[:space:]][^;&|]*$prot"; then
+      block SEC-08 "That command writes to a protected path."
+    fi
     ;;
 
   Edit|Write|MultiEdit|NotebookEdit)
