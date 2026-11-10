@@ -1,0 +1,14 @@
+# Token Donation local scratch (GIT-09)
+.td/local/
+
+# Secrets never committed (SEC-02)
+.env
+.env.*
+*.pem
+*.key
+
+# Personal Claude Code settings
+.claude/settings.local.json
+
+# OS noise
+.DS_Store
