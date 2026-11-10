@@ -26,8 +26,7 @@ td_checks() { # collaborator (SEC-05), not paused (SEC-14)
   case "$perm" in WRITE|MAINTAIN|ADMIN) ;;
     *) die "you need write access to this repo (you have: ${perm:-unknown}). Ask the owner to invite you as a collaborator." ;;
   esac
-  [ "$(gh label list --search td-paused --json name --jq 'map(select(.name=="td-paused"))|length' 2>/dev/null)" = 0 ] \
-    || die "Token Donation is paused on this repo (label td-paused). Nothing to do."
+  td_paused && die "Token Donation is paused on this repo (label td-paused). Nothing to do."
   LOGIN=$(gh api user --jq .login)
   REPO=$(gh repo view --json nameWithOwner --jq .nameWithOwner)
 }
@@ -45,7 +44,7 @@ cmd_doctor() {
   chk "git identity"   "git config user.email"          "run: git config user.email you@example.com"
   chk "write access"   "gh repo view --json viewerPermission --jq .viewerPermission | grep -Eq 'WRITE|MAINTAIN|ADMIN'" \
                        "ask the owner to invite you as a collaborator, then accept the invite on GitHub"
-  chk "not paused"     "[ \"\$(gh label list --search td-paused --json name --jq 'map(select(.name==\"td-paused\"))|length')\" = 0 ]" \
+  chk "not paused"     "! td_paused" \
                        "the owner has paused Token Donation"
   chk "clean worktree" "[ -z \"\$(git status --porcelain)\" ]" "commit or stash your local changes first"
   [ $ok = 1 ] && say "All good. Next: .td/bin/td list" || { say "Fix the items above, then run .td/bin/td doctor again."; return 1; }

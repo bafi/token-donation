@@ -43,7 +43,7 @@ with_timeout() { # with_timeout <secs> cmd...  (macOS has no timeout(1))
   "$@" >"$o" 2>"$e" & pid=$!
   ( sleep "$s"; pkill -P "$pid" 2>/dev/null; kill "$pid" 2>/dev/null ) >/dev/null 2>&1 & w=$!
   wait "$pid"; rc=$?
-  kill "$w" 2>/dev/null
+  kill "$w" 2>/dev/null; wait "$w" 2>/dev/null
   cat "$o"; cat "$e" >&2; rm -f "$o" "$e"
   return $rc
 }
@@ -99,6 +99,12 @@ td_dor_check() {
     }'
 }
 td_dor_size() { awk '/^## /{sec=tolower(substr($0,4))} sec ~ /^size/ && /^[[:space:]]*[SML][[:space:]]*$/ {gsub(/[[:space:]]/,""); print; exit}'; }
+
+# SEC-14 kill switch. gh prints nothing (not 0) when no label matches.
+td_paused() {
+  c=$(gh label list --search td-paused --json name --jq 'map(select(.name=="td-paused"))|length' 2>/dev/null) || return 2
+  [ "${c:-0}" -gt 0 ]
+}
 
 # Secret scan of stdin (SEC-02). 0 = clean, 1 = hit, 2 = cannot run.
 td_scan() { sh "$TD_HOOKS/scan.sh" -; }

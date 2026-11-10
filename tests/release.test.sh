@@ -18,7 +18,7 @@ echo "$*" >> "$GH_LOG"
 case "${GH_MODE:-ok}" in fail) exit 1 ;; hang) sleep 30; exit 1 ;; esac
 case "$*" in
   "repo view"*)        [ "$GH_MODE" = reader ] && echo READ || echo WRITE ;;
-  "label list"*)       [ "$GH_MODE" = paused ] && echo 1 || echo 0 ;;
+  "label list"*)       if [ "$GH_MODE" = paused ]; then echo 1; fi ;;   # real gh prints nothing (exit 0) when no label matches
   "issue view"*state*) [ "$GH_MODE" = closed ] && echo CLOSED || echo OPEN ;;
   "issue view"*comments*) [ "$GH_MODE" = lost ] && echo "claim c0" || echo "claim c1" ;;
   *) : ;;

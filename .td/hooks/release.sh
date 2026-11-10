@@ -57,8 +57,9 @@ unpushed_diff() { git log -p --format= "$src" --not --remotes; }
 # 1. Check: collaborator, not paused, task still open, and our claim still wins.
 perm=$(with_timeout 8 gh repo view --json viewerPermission --jq .viewerPermission 2>/dev/null) || pending check
 case "$perm" in WRITE|MAINTAIN|ADMIN) ;; *) td_log release not-collaborator 1; exit 0 ;; esac   # SEC-05
-paused=$(with_timeout 8 gh label list --search td-paused --json name --jq 'map(select(.name=="td-paused"))|length' 2>/dev/null) || pending check
-[ "$paused" = 0 ] || { td_log release paused 0; exit 0; }                       # SEC-14
+with_timeout 8 td_paused; p=$?
+[ $p = 2 ] && pending check
+[ $p = 0 ] && { td_log release paused 0; exit 0; }                              # SEC-14
 state=$(with_timeout 8 gh issue view "$n" --json state --jq .state 2>/dev/null) || pending check
 winner=$(with_timeout 8 td_winner "$n" 2>/dev/null) || pending check
 
