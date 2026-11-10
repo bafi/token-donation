@@ -7,7 +7,7 @@ check() { if eval "$2"; then pass=$((pass+1)); echo "ok   $1"; else fail=$((fail
 
 T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
 export CLAUDE_PROJECT_DIR="$T"
-. "$HERE/.td/hooks/lib.sh"
+. "$HERE/src/hooks/lib.sh"
 
 READY='## Goal
 Export tasks as CSV.
@@ -54,8 +54,8 @@ payload='{"comments":[
 check test_SEC_05_forged_markers_ignored    '[ "$(printf "%s" "$payload" | jq -r "$TD_MARKER_JQ" | td_fold)" = good ]'
 
 # --- CLI basics
-check test_td_help_runs                      'sh "$HERE/.td/bin/td" help | grep -q "pick \[N\]"'
-check test_td_syntax_ok                      'sh -n "$HERE/.td/bin/td"'
+check test_td_help_runs                      'sh "$HERE/src/bin/td" help | grep -q "pick \[N\]"'
+check test_td_syntax_ok                      'sh -n "$HERE/src/bin/td"'
 
 echo "---"; echo "td: $pass passed, $fail failed"
 [ "$fail" -eq 0 ]

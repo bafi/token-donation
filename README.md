@@ -40,6 +40,9 @@ Nothing else to install: the hooks are committed in `.claude/settings.json`. Acc
 - [`HOOKS.md`](HOOKS.md): which Claude Code hook does what
 - [`CLAUDE.md`](CLAUDE.md): rules for any Claude session building this project
 
+## Contributing code
+The tool's source is in `src/`. The live copy in `.td/` and `.claude/` is protected and updated by the maintainer with `src/install.sh` after a merge. See [`CLAUDE.md`](CLAUDE.md).
+
 ## Tests
 ```sh
 sh tests/run.sh

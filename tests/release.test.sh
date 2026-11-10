@@ -33,7 +33,7 @@ setup() { # fresh origin + work clone on td/42-x with an active claim
   git clone -q "$T/origin.git" "$T/w" 2>/dev/null
   cd "$T/w" || exit 1
   git config user.email h@t; git config user.name helper
-  mkdir -p .td/hooks .td/local; cp "$HERE"/.td/hooks/*.sh .td/hooks/
+  mkdir -p .td/hooks .td/local; cp "$HERE"/src/hooks/*.sh .td/hooks/
   printf '.td/local/\n' > .gitignore
   git add -A; git commit -q -m init; git push -q origin main 2>/dev/null
   git switch -q -c td/42-x; git push -q origin td/42-x 2>/dev/null
@@ -144,8 +144,8 @@ fire "$END"; cd ..
 check test_GIT_09_subdir_and_spaces        'git log -1 --name-only --format= | grep -q "src/my file.txt"'
 
 # --- SEC-02: ordinary code is not a secret (no false positive)
-check test_SEC_02_no_false_positive_on_code 'printf "token = someIdentifierName\nconst apiKey = process.env.API_KEY\n" | sh "$HERE/.td/hooks/scan.sh" -'
-check test_SEC_02_detects_quoted_secret     '! printf "api_key = \"abcd1234efgh5678ijkl\"\n" | sh "$HERE/.td/hooks/scan.sh" -'
+check test_SEC_02_no_false_positive_on_code 'printf "token = someIdentifierName\nconst apiKey = process.env.API_KEY\n" | sh "$HERE/src/hooks/scan.sh" -'
+check test_SEC_02_detects_quoted_secret     '! printf "api_key = \"abcd1234efgh5678ijkl\"\n" | sh "$HERE/src/hooks/scan.sh" -'
 
 # --- SEC-05: someone without write access can't release (or publish anything)
 setup; echo c > c.txt; export GH_MODE=reader

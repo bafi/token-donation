@@ -18,6 +18,10 @@ You are building **Token Donation**. Read these before any work:
 - Hooks are plain shell scripts with no dependencies. Their only network access is through `gh`, and `git` to `origin` (SEC-09). The hook plan is in `HOOKS.md`.
 - Keep it simple. This is a hackathon v1: no features beyond `SPEC.md`, and nothing from the "Deferred to v2" list.
 
+## Where the code lives (POLICIES.md D12)
+- **Edit `src/`**: `src/hooks/*.sh`, `src/bin/td`, `src/claude-settings.json`. Tests run against `src/`.
+- **Never edit `.td/hooks/`, `.td/bin/` or `.claude/settings.json` directly.** Those are the installed copy. The maintainer runs `src/install.sh` on `main` after merging.
+
 ## Dogfooding (POLICIES.md D9)
 This repo is also the example project. The guardrail hook enforces SEC-07/08 **only on `td/*` task branches**. When you're building the tool on any other branch, you may edit `.claude/`, `.td/hooks/` and the rest freely.
 

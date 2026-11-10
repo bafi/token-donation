@@ -2,7 +2,7 @@
 # Tests for .td/hooks/guard.sh. Each test is named after the policy ID it proves (B-02).
 set -u
 HERE=$(cd "$(dirname "$0")/.." && pwd)
-GUARD="$HERE/.td/hooks/guard.sh"
+GUARD="$HERE/src/hooks/guard.sh"
 pass=0; fail=0
 
 # A throwaway repo where HEAD is on a task branch.
