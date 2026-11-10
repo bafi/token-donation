@@ -78,7 +78,7 @@ if [ "$on_branch" = 1 ]; then
   { git diff --name-only HEAD; git ls-files --others --exclude-standard; } 2>/dev/null | sort -u > "$list"
   while IFS= read -r f; do
     case "$f" in
-      .github/*|.claude/*|CLAUDE.md|.td/hooks/*|.td/config.yml|.gitignore|.gitleaks.toml|CODEOWNERS|.env|.env.*|*.pem|*.key|*/.env|*/.env.*)
+      .github/*|.claude/*|CLAUDE.md|.td/hooks/*|.td/bin/*|.td/config.yml|.gitignore|.gitleaks.toml|CODEOWNERS|.env|.env.*|*.pem|*.key|*/.env|*/.env.*)
         skipped="$skipped $f" ;;
       *) git add -- "$f" 2>/dev/null ;;
     esac

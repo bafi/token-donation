@@ -77,8 +77,8 @@ case "$tool" in
     # SEC-08: catch obvious shell writes to protected paths. The Edit/Write checks
     # below are the main guard; CI backs both up on the server.
     case "$c" in
-      *">"*".github/"*|*">"*".claude/"*|*">"*"CLAUDE.md"*|*">"*".td/hooks/"*|*">"*".gitignore"*|\
-      *"rm "*".github"*|*"rm "*".claude"*|*"rm "*".td/hooks"*|*"rm "*"CLAUDE.md"*)
+      *">"*".github/"*|*">"*".claude/"*|*">"*"CLAUDE.md"*|*">"*".td/hooks/"*|*">"*".td/bin/"*|*">"*".gitignore"*|\
+      *"rm "*".github"*|*"rm "*".claude"*|*"rm "*".td/hooks"*|*"rm "*".td/bin"*|*"rm "*"CLAUDE.md"*)
         block SEC-08 "That command writes to a protected path." ;;
     esac
     ;;
@@ -95,7 +95,7 @@ case "$tool" in
     rel=${f#"$root"/}
     case "$rel" in
       .td/HANDOFF.md|.td/local/*) exit 0 ;;   # allowed: checkpoints and scratch
-      .github/*|.claude/*|CLAUDE.md|.td/hooks/*|.td/config.yml|.gitignore|.gitleaks.toml|CODEOWNERS|.github)
+      .github/*|.claude/*|CLAUDE.md|.td/hooks/*|.td/bin/*|.td/config.yml|.gitignore|.gitleaks.toml|CODEOWNERS|.github)
         block SEC-08 "'$rel' is a protected path. Escalate to the owner with needs-owner (AGT-12)." ;;
     esac
     ;;

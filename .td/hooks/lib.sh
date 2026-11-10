@@ -81,5 +81,24 @@ td_winner() {
   | awk '$1=="claim" && w=="" {w=$2} ($1=="release"||$1=="reap") && $2==w {w=""} END {print w}'
 }
 
+# Definition of Ready (LIFE-06) on an issue body read from stdin.
+# Prints what is missing, one item per line. Exit 0 = ready.
+td_dor_check() {
+  awk '
+    /^## /     { sec=tolower(substr($0,4)); sub(/[[:space:]]+$/,"",sec); seen[sec]=1; next }
+    /[^[:space:]]/ { body[sec]=body[sec] $0 "\n"; if (sec=="done criteria" && $0 ~ /^[[:space:]]*[-*] /) crit++ }
+    END {
+      n=split("goal|done criteria|size|next step|pointers", need, "|")
+      for (i=1;i<=n;i++) if (!seen[need[i]] || body[need[i]]=="") { print "missing: " need[i]; bad=1 }
+      if (seen["done criteria"] && crit < 1) { print "done criteria: need at least one \"- \" item"; bad=1 }
+      s=body["size"]; gsub(/[^A-Za-z]/,"",s)
+      if (seen["size"] && s !~ /^[SML]$/) { print "size: must be S, M or L"; bad=1 }
+      lc=tolower(body["done criteria"])
+      if (lc ~ /works well|clean up|as discussed|improve performance$|make it better/) { print "done criteria: too vague (LIFE-06)"; bad=1 }
+      exit bad
+    }'
+}
+td_dor_size() { awk '/^## /{sec=tolower(substr($0,4))} sec ~ /^size/ && /^[[:space:]]*[SML][[:space:]]*$/ {gsub(/[[:space:]]/,""); print; exit}'; }
+
 # Secret scan of stdin (SEC-02). 0 = clean, 1 = hit, 2 = cannot run.
 td_scan() { sh "$TD_HOOKS/scan.sh" -; }

@@ -4,7 +4,13 @@
 
 Token Donation turns GitHub issues into tasks that any Claude Code session can pick up cold. Progress is saved as you work, released automatically when a session ends or hits its usage limit, and handed to the next person with a short briefing.
 
-> **Status: early, and built by itself.** The hand-off hooks and guardrails work and are tested. The `td` command (`add` / `list` / `pick`) is next. The remaining features are being built as Token Donation tasks.
+> **Status: early, and built by itself.** The `td` command (`doctor` / `add` / `list` / `pick` / `ready`), the hand-off hooks and the guardrails work and are tested. The remaining features are being built as Token Donation tasks.
+
+## Donate your tokens
+Want to help? Follow **[DONATE.md](DONATE.md)**. It takes 5 minutes to set up, then one command:
+```sh
+.td/bin/td pick
+```
 
 ## How it works
 1. `td add "…"` creates a task: an issue with a goal, done criteria and a size.

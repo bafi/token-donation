@@ -47,6 +47,7 @@ expect test_SEC_08_blocks_edit_workflow       2 "$(run Edit file_path "$tmp/.git
 expect test_SEC_08_blocks_edit_claude_dir     2 "$(run Write file_path "$tmp/.claude/settings.json")"
 expect test_SEC_08_blocks_edit_claude_md      2 "$(run Edit file_path "$tmp/CLAUDE.md")"
 expect test_SEC_08_blocks_edit_hooks          2 "$(run Edit file_path "$tmp/.td/hooks/guard.sh")"
+expect test_SEC_08_blocks_edit_td_bin          2 "$(run Edit file_path "$tmp/.td/bin/td")"
 expect test_SEC_08_blocks_edit_gitignore      2 "$(run Edit file_path "$tmp/.gitignore")"
 expect test_SEC_08_blocks_shell_redirect      2 "$(run Bash command 'echo x > .github/workflows/ci.yml')"
 expect test_SEC_08_allows_handoff_file        0 "$(run Write file_path "$tmp/.td/HANDOFF.md")"
